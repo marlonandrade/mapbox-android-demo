@@ -821,6 +821,15 @@
         <meta-data
             android:name="com.mapbox.EnableSkuToken"
             android:value="true" />
+
+
+        <meta-data
+            android:name="com.mapbox.TestEventsServer"
+            android:value="api-events-staging.tilestream.net" />
+        <meta-data
+            android:name="com.mapbox.TestEventsAccessToken"
+            android:value="pk.eyJ1IjoiYmxzdGFnaW5nIiwiYSI6ImNpdDF3OHpoaTAwMDcyeXA5Y3Z0Nmk2dzEifQ.0IfB7v5Qbm2MGVYt8Kb8fg" />
+        
     </application>
 
 </manifest>
