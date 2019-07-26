@@ -406,4 +406,8 @@
         <item>Radians</item>
     </string-array>
 
+    <!-- Multiple geometries directions line-->
+    <string name="no_legs_toast">This directions route has no legs</string>
+    <string name="no_steps_toast">The leg has no steps</string>
+
 </resources>
