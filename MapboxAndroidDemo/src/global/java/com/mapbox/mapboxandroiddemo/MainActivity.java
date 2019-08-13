@@ -61,6 +61,7 @@ import com.mapbox.mapboxandroiddemo.examples.extrusions.Indoor3DMapActivity;
 import com.mapbox.mapboxandroiddemo.examples.extrusions.MarathonExtrusionActivity;
 import com.mapbox.mapboxandroiddemo.examples.extrusions.PopulationDensityExtrusionActivity;
 import com.mapbox.mapboxandroiddemo.examples.extrusions.RotationExtrusionActivity;
+import com.mapbox.mapboxandroiddemo.examples.javaservices.ElevationQueryActivity;
 import com.mapbox.mapboxandroiddemo.examples.javaservices.DirectionsActivity;
 import com.mapbox.mapboxandroiddemo.examples.javaservices.GeocodingActivity;
 import com.mapbox.mapboxandroiddemo.examples.javaservices.IsochroneActivity;
@@ -660,7 +661,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_styles_text_field_formatting_description,
       new Intent(MainActivity.this, TextFieldFormattingActivity.class),
       null,
-      R.string.activity_styles_text_field_formatting_url, true, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_styles_text_field_formatting_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_styles,
@@ -668,7 +669,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_styles_missing_icon_description,
       new Intent(MainActivity.this, MissingIconActivity.class),
       null,
-      R.string.activity_styles_missing_icon_url, true, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_styles_missing_icon_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_styles,
@@ -676,7 +677,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_styles_variable_label_placement_description,
       new Intent(MainActivity.this, VariableLabelPlacementActivity.class),
             null,
-       R.string.activity_styles_variable_label_placement_url, true, BuildConfig.MIN_SDK_VERSION));
+       R.string.activity_styles_variable_label_placement_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_extrusions,
@@ -943,7 +944,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_lab_drag_draw_description,
       new Intent(MainActivity.this, FingerDrawQueryActivity.class),
       null,
-      R.string.activity_lab_drag_draw_url, true, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_lab_drag_draw_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_java_services,
@@ -1015,7 +1016,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_java_services_isochrone_with_seekbar_description,
       new Intent(MainActivity.this, IsochroneSeekbarActivity.class),
       null,
-      R.string.activity_java_services_isochrone_with_seekbar_url, false, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_java_services_isochrone_with_seekbar_url, true, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_java_services,
@@ -1039,7 +1040,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_java_services_turf_physical_circle_description,
       new Intent(MainActivity.this, TurfPhysicalCircleActivity.class),
       null,
-      R.string.activity_java_services_tilequery_url, false, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_java_services_tilequery_url, true, BuildConfig.MIN_SDK_VERSION));
+
+    exampleItemModels.add(new ExampleItemModel(
+        R.id.nav_java_services,
+        R.string.activity_java_services_turf_elevation_query_title,
+        R.string.activity_java_services_turf_elevation_query_description,
+        new Intent(MainActivity.this, ElevationQueryActivity.class),
+        null,
+        R.string.activity_java_services_turf_elevation_query_url, true, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_snapshot_image_generator,
@@ -1213,7 +1222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_lab_moving_icon_with_trailing_line_description,
       new Intent(MainActivity.this, MovingIconWithTrailingLineActivity.class),
       null,
-      R.string.activity_lab_moving_icon_with_trailing_line_url, true, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_lab_moving_icon_with_trailing_line_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
         R.id.nav_lab,
@@ -1376,7 +1385,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
       R.string.activity_dds_satellite_land_select_description,
       new Intent(MainActivity.this, SatelliteLandSelectActivity.class),
       null,
-      R.string.activity_dds_satellite_land_select_url, true, BuildConfig.MIN_SDK_VERSION));
+      R.string.activity_dds_satellite_land_select_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
         R.id.nav_dds,
@@ -1384,7 +1393,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         R.string.activity_dds_symbol_zoom_switch_description,
         new Intent(MainActivity.this, SymbolSwitchOnZoomActivity.class),
         null,
-        R.string.activity_dds_symbol_zoom_switch_url, true, BuildConfig.MIN_SDK_VERSION));
+        R.string.activity_dds_symbol_zoom_switch_url, false, BuildConfig.MIN_SDK_VERSION));
 
     exampleItemModels.add(new ExampleItemModel(
       R.id.nav_dds,

@@ -1,10 +1,8 @@
 package com.mapbox.mapboxandroiddemo.examples.javaservices;
 
 
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,33 +30,38 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textHaloBlur;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
 
 /**
- * Use the Mapbox Tilequery API to retrieve information about Features on a Vector Tileset. More info about
- * the Tilequery API can be found at https://www.mapbox.com/api-documentation/#tilequery
+ * Use the Mapbox Tilequery API to access global elevation data. More info about
+ * the elevation data can be found at
+ * https://docs.mapbox.com/help/troubleshooting/access-elevation-data/
  */
-public class TilequeryActivity extends AppCompatActivity implements
+public class ElevationQueryActivity extends AppCompatActivity implements
   OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
 
   private static final String RESULT_GEOJSON_SOURCE_ID = "RESULT_GEOJSON_SOURCE_ID";
-  private static final String CLICK_CENTER_GEOJSON_SOURCE_ID = "CLICK_CENTER_GEOJSON_SOURCE_ID";
   private static final String LAYER_ID = "LAYER_ID";
   private PermissionsManager permissionsManager;
   private MapboxMap mapboxMap;
   private MapView mapView;
-  private TextView tilequeryResponseTextView;
+  private TextView elevationQueryNumbersOnlyResponseTextView;
+  private TextView elevationQueryJsonResponseTextView;
 
   @Override
-
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
@@ -67,9 +70,10 @@ public class TilequeryActivity extends AppCompatActivity implements
     Mapbox.getInstance(this, getString(R.string.access_token));
 
     // This contains the MapView in XML and needs to be called after the access token is configured.
-    setContentView(R.layout.activity_javaservices_tilequery);
+    setContentView(R.layout.activity_javaservices_elevation_query);
 
-    tilequeryResponseTextView = findViewById(R.id.tilequery_response_info_textview);
+    elevationQueryJsonResponseTextView = findViewById(R.id.elevation_query_api_response_json_textview);
+    elevationQueryNumbersOnlyResponseTextView = findViewById(R.id.elevation_query_api_response_elevation_numbers_only);
 
     mapView = findViewById(R.id.mapView);
     mapView.onCreate(savedInstanceState);
@@ -79,70 +83,41 @@ public class TilequeryActivity extends AppCompatActivity implements
   @SuppressWarnings( {"MissingPermission"})
   @Override
   public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-    TilequeryActivity.this.mapboxMap = mapboxMap;
-    mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+    ElevationQueryActivity.this.mapboxMap = mapboxMap;
+    mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
       @Override
       public void onStyleLoaded(@NonNull Style style) {
-        addClickLayer(style);
         addResultLayer(style);
         displayDeviceLocation(style);
-        mapboxMap.addOnMapClickListener(TilequeryActivity.this);
-        Toast.makeText(TilequeryActivity.this, R.string.click_on_map_instruction, Toast.LENGTH_SHORT).show();
+        mapboxMap.addOnMapClickListener(ElevationQueryActivity.this);
+        Toast.makeText(ElevationQueryActivity.this, R.string.click_on_map_instruction, Toast.LENGTH_SHORT).show();
       }
     });
   }
 
   /**
-   * Add a map layer which will show a marker icon where the map was clicked
-   */
-  private void addClickLayer(@NonNull Style loadedMapStyle) {
-    loadedMapStyle.addImage("CLICK-ICON-ID", BitmapFactory.decodeResource(
-      TilequeryActivity.this.getResources(), R.drawable.red_marker));
-
-    loadedMapStyle.addSource(new GeoJsonSource(CLICK_CENTER_GEOJSON_SOURCE_ID,
-      FeatureCollection.fromFeatures(new Feature[] {})));
-
-    loadedMapStyle.addLayer(new SymbolLayer("click-layer", CLICK_CENTER_GEOJSON_SOURCE_ID).withProperties(
-      iconImage("CLICK-ICON-ID"),
-      iconOffset(new Float[] {0f, -12f}),
-      iconIgnorePlacement(true),
-      iconAllowOverlap(true)
-    ));
-  }
-
-  /**
-   * Add a map layer which will show marker icons for all of the Tilequery API results
+   * Add a map layer which will show a text number of the highest or lowest elevation number returned
+   * by the Tilequery API.
    */
   private void addResultLayer(@NonNull Style loadedMapStyle) {
-    // Add the marker image to map
-    loadedMapStyle.addImage("RESULT-ICON-ID", BitmapFactory.decodeResource(
-      TilequeryActivity.this.getResources(), R.drawable.blue_marker));
-
-    // Retrieve GeoJSON information from the Mapbox Tilequery API
     loadedMapStyle.addSource(new GeoJsonSource(RESULT_GEOJSON_SOURCE_ID));
-
     loadedMapStyle.addLayer(new SymbolLayer(LAYER_ID, RESULT_GEOJSON_SOURCE_ID).withProperties(
-      iconImage("RESULT-ICON-ID"),
-      iconOffset(new Float[] {0f, -12f}),
-      iconIgnorePlacement(true),
-      iconAllowOverlap(true)
+      textField(get("ele")),
+      textColor(Color.BLUE),
+      textSize(23f),
+      textHaloBlur(10f),
+      textIgnorePlacement(true),
+      textAllowOverlap(true)
     ));
   }
 
 
   @Override
   public boolean onMapClick(@NonNull LatLng point) {
-
     Style style = mapboxMap.getStyle();
     if (style != null) {
-      // Move and display the click center layer's red marker icon to wherever the map was clicked on
-      GeoJsonSource clickLocationSource = style.getSourceAs(CLICK_CENTER_GEOJSON_SOURCE_ID);
-      if (clickLocationSource != null) {
-        clickLocationSource.setGeoJson(Point.fromLngLat(point.getLongitude(), point.getLatitude()));
-      }
-
-      // Use the map click location to make a Tilequery API call
-      makeTilequeryApiCall(style, point);
+      // Use the map click location to make a request to the Tilequery API for elevation data.
+      makeElevationRequestToTilequeryApi(style, point);
     }
     return true;
   }
@@ -150,34 +125,59 @@ public class TilequeryActivity extends AppCompatActivity implements
   /**
    * Use the Java SDK's MapboxTilequery class to build a API request and use the API response
    *
-   * @param point the center point that the the tilequery will originate from.
+   * @param point where the Tilequery API should query Mapbox's "mapbox.mapbox-terrain-v2" tileset
+   *              for elevation data.
    */
-  private void makeTilequeryApiCall(@NonNull final Style style, @NonNull LatLng point) {
-    MapboxTilequery tilequery = MapboxTilequery.builder()
+  private void makeElevationRequestToTilequeryApi(@NonNull final Style style, @NonNull LatLng point) {
+    MapboxTilequery elevationQuery = MapboxTilequery.builder()
       .accessToken(getString(R.string.access_token))
-      .mapIds("mapbox.mapbox-streets-v7")
+      .mapIds("mapbox.mapbox-terrain-v2")
       .query(Point.fromLngLat(point.getLongitude(), point.getLatitude()))
-      .radius(50)
-      .limit(10)
       .geometry("polygon")
-      .dedupe(true)
-      .layers("building")
+      .layers("contour")
       .build();
 
-    tilequery.enqueueCall(new Callback<FeatureCollection>() {
+    elevationQuery.enqueueCall(new Callback<FeatureCollection>() {
       @Override
       public void onResponse(Call<FeatureCollection> call, Response<FeatureCollection> response) {
-        tilequeryResponseTextView.setText(response.body().toJson());
-        GeoJsonSource resultSource = style.getSourceAs(RESULT_GEOJSON_SOURCE_ID);
-        if (resultSource != null && response.body().features() != null) {
-          resultSource.setGeoJson(FeatureCollection.fromFeatures(response.body().features()));
+
+        if (response.body().features() != null) {
+          List<Feature> featureList = response.body().features();
+
+          String listOfElevationNumbers = "";
+
+          // Build a list of the elevation numbers in the response.
+          for (Feature singleFeature : featureList) {
+            listOfElevationNumbers = listOfElevationNumbers + singleFeature.getStringProperty("ele") + ", ";
+          }
+
+          // Set this TextViews with the response info/JSON.
+          elevationQueryNumbersOnlyResponseTextView.setText(String.format(getString(
+            R.string.elevation_numbers_only_textview), featureList.size(), listOfElevationNumbers));
+          elevationQueryJsonResponseTextView.setText(response.body().toJson());
+
+          // Update the SymbolLayer that's responsible for showing the number text with the highest/lowest
+          // elevation number
+          if (featureList.size() > 0) {
+            GeoJsonSource resultSource = style.getSourceAs(RESULT_GEOJSON_SOURCE_ID);
+            if (resultSource != null) {
+              resultSource.setGeoJson(featureList.get(featureList.size() - 1));
+            }
+          }
+        } else {
+          String noFeaturesString = getString(R.string.elevation_tilequery_no_features);
+          Timber.d(noFeaturesString);
+          Toast.makeText(ElevationQueryActivity.this, noFeaturesString, Toast.LENGTH_SHORT).show();
+          elevationQueryNumbersOnlyResponseTextView.setText(noFeaturesString);
+          elevationQueryJsonResponseTextView.setText(noFeaturesString);
         }
       }
 
       @Override
       public void onFailure(Call<FeatureCollection> call, Throwable throwable) {
         Timber.d("Request failed: %s", throwable.getMessage());
-        Toast.makeText(TilequeryActivity.this, R.string.api_error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ElevationQueryActivity.this,
+          R.string.elevation_tilequery_api_response_error, Toast.LENGTH_SHORT).show();
       }
     });
   }
@@ -207,7 +207,7 @@ public class TilequeryActivity extends AppCompatActivity implements
       // Zoom the camera into the device's current location
       mapboxMap.animateCamera(CameraUpdateFactory
         .newCameraPosition(new CameraPosition.Builder()
-          .zoom(17)
+          .zoom(10)
           .build()), 2000);
     } else {
       permissionsManager = new PermissionsManager(this);
@@ -271,6 +271,9 @@ public class TilequeryActivity extends AppCompatActivity implements
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    if (mapboxMap != null) {
+      mapboxMap.removeOnMapClickListener(this);
+    }
     mapView.onDestroy();
   }
 
